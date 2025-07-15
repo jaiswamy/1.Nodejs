@@ -38,3 +38,6 @@ services:
 
 volumes:
   mongo-data:
+
+networks:
+  mongo-networks:

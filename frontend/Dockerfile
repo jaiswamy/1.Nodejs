@@ -1,32 +1,15 @@
-FROM node:22
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dependencies first (layer caching)
-COPY package.json package-lock.json ./
+# Install http-server globally
+RUN npm install -g http-server
 
-# Clean up cache and remove node_modules for a fresh install
-RUN rm -rf node_modules package-lock.json
-
-# Reinstall dependencies (this will regenerate the package-lock.json)
-RUN npm install
-
-# Clean npm cache to avoid leftover issues
-RUN npm cache clean --force
-
-# Rebuild the app and install global tools
-RUN npm rebuild
-RUN npm install -g vite
-
-# Copy the rest of the app
+# Copy all frontend files
 COPY . .
 
-# Build the project with vite
-RUN npx vite build
+# Expose port
+EXPOSE 8080
 
-# Install serve locally to avoid global installation issues
-RUN npm install serve
-
-EXPOSE 3000
-
-CMD ["npx", "serve", "-s", "dist", "-l", "3000"]
+# Start the static server
+CMD ["http-server", "-p", "8080"]
