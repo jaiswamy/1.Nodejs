@@ -92,4 +92,15 @@ h2 + button {
 /* Responsive */
 @media (max-width: 600px) {
   body {
-    padd
+    padding: 20px;
+  }
+
+  #itemName {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  #addBtn {
+    width: 100%;
+  }
+}
