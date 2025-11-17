@@ -1,0 +1,76 @@
+STEP 1 — Clean up any old/broken Jenkins install
+
+sudo systemctl stop jenkins
+sudo apt purge jenkins -y
+sudo apt autoremove -y
+sudo rm -rf /usr/share/jenkins
+sudo rm -rf /var/lib/jenkins
+sudo rm -rf /var/log/jenkins
+sudo rm -rf /var/cache/jenkins
+---
+
+STEP 2 — Create Jenkins user (since package installation failed earlier)
+
+sudo useradd -r -s /bin/false jenkins
+----
+
+STEP 3 — Download Jenkins WAR manually (since auto-install repo failed)
+
+sudo mkdir -p /usr/share/jenkins
+sudo wget https://get.jenkins.io/war-stable/2.452.1/jenkins.war -O /usr/share/jenkins/jenkins.war
+
+Verify:
+ls -lh /usr/share/jenkins/jenkins.war
+----
+
+STEP 4 — Create all necessary Jenkins directories
+
+sudo mkdir -p /var/lib/jenkins
+sudo mkdir -p /var/log/jenkins
+sudo mkdir -p /var/cache/jenkins
+----
+
+STEP 5 — Assign permissions
+
+sudo chown -R jenkins:jenkins /usr/share/jenkins
+sudo chown -R jenkins:jenkins /var/lib/jenkins
+sudo chown -R jenkins:jenkins /var/log/jenkins
+sudo chown -R jenkins:jenkins /var/cache/jenkins
+sudo chmod 644 /usr/share/jenkins/jenkins.war
+----
+
+STEP 6 — Create the custom systemd Jenkins service
+
+Open file:
+
+sudo nano /etc/systemd/system/jenkins.service
+
+
+Paste this EXACT content:
+
+[Unit]
+Description=Jenkins Continuous Integration Server
+After=network.target
+
+[Service]
+Type=simple
+User=jenkins
+Group=jenkins
+Environment="JENKINS_HOME=/var/lib/jenkins"
+ExecStart=/usr/bin/java -jar /usr/share/jenkins/jenkins.war
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+----
+
+STEP 7 — Reload systemd and start Jenkins
+
+sudo systemctl daemon-reload
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+----
+
+
+
+
